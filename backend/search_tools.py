@@ -101,10 +101,13 @@ class CourseSearchTool(Tool):
             header += "]"
             
             # Track source for the UI
-            source = course_title
+            source_text = course_title
             if lesson_num is not None:
-                source += f" - Lesson {lesson_num}"
-            sources.append(source)
+                source_text += f" - Lesson {lesson_num}"
+            lesson_url = None
+            if lesson_num is not None:
+                lesson_url = self.store.get_lesson_link(course_title, lesson_num)
+            sources.append({"text": source_text, "url": lesson_url})
             
             formatted.append(f"{header}\n{doc}")
         
@@ -136,8 +139,11 @@ class ToolManager:
         """Execute a tool by name with given parameters"""
         if tool_name not in self.tools:
             return f"Tool '{tool_name}' not found"
-        
-        return self.tools[tool_name].execute(**kwargs)
+
+        try:
+            return self.tools[tool_name].execute(**kwargs)
+        except Exception as e:
+            return f"Tool execution error: {str(e)}"
     
     def get_last_sources(self) -> list:
         """Get sources from the last search operation"""

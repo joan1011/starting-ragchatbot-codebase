@@ -229,10 +229,12 @@ class DocumentProcessor:
                 
                 chunks = self.chunk_text(lesson_text)
                 for idx, chunk in enumerate(chunks):
-                    # For any chunk of each lesson, add lesson context & course title
-                  
-                    chunk_with_context = f"Course {course_title} Lesson {current_lesson} content: {chunk}"
-                    
+                    # Only the first chunk of each lesson gets the context prefix
+                    if idx == 0:
+                        chunk_with_context = f"Lesson {current_lesson} content: {chunk}"
+                    else:
+                        chunk_with_context = chunk
+
                     course_chunk = CourseChunk(
                         content=chunk_with_context,
                         course_title=course.title,
